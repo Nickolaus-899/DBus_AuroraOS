@@ -1,0 +1,2 @@
+libsdbus-c++-dev
+nlohmann-json3-dev

@@ -1,5 +1,5 @@
 #include <iostream>
-
+#include <string>
 
 class Printer {
 private:
@@ -14,5 +14,5 @@ public:
 std::pair<uint, std::string> read_conf();
 
 
-constexpr const char CONF_PATH[] = "/home/nickolaus-sdr/com.system.configurationManager/confManagerApplication1.json";
+inline const std::string CONF_PATH = std::string(getenv("HOME")) + "/com.system.configurationManager/confManagerApplication1.json";
 constexpr bool debug_mode = false;

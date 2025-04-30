@@ -1,0 +1,1 @@
+constexpr const char* SERVICE_NAME = "com.system.configurationManager";
