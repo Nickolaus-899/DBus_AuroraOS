@@ -12,9 +12,10 @@ using Config = std::map<std::string, sdbus::Variant>;
 
 inline const std::string CONF_DIR = std::string(getenv("HOME")) + "/com.system.configurationManager/";
 
+namespace conf_worker {
 
-void save_conf(Config& conf, std::string& conf_name) {
-    auto path = CONF_DIR + conf_name;
+void save_conf(Config& conf, const std::string& conf_path) {
+    auto path = CONF_DIR + conf_path;
 
     if (!std::filesystem::exists(path)) {
         std::cerr << "File " << path << " doesn't exist (save)\n";
@@ -59,8 +60,8 @@ void save_conf(Config& conf, std::string& conf_name) {
     }
 }
 
-void load_conf(Config& conf, std::string& conf_name) {
-    auto path = CONF_DIR + conf_name;
+void load_conf(Config& conf, const std::string& conf_path) {
+    auto path = CONF_DIR + conf_path;
 
     if (!std::filesystem::exists(path)) {
         std::cerr << "File " << path << " doesn't exist (load)\n";
@@ -91,4 +92,6 @@ void load_conf(Config& conf, std::string& conf_name) {
 
         conf[key] = var;
     }
+}
+
 }

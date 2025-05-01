@@ -1,28 +1,33 @@
 #include <iostream>
 #include <sdbus-c++/sdbus-c++.h>
 #include <string>
+#include <functional>
 
 
 constexpr const char* INTERFACE_NAME = "com.system.configurationManager.Application.Configuration";
+constexpr const char* SERVICE_NAME = "com.system.configurationManager";
 
-class ConfInterface: public sdbus::AdaptorInterfaces<sdbus::ObjectManager_adaptor> {
-private:
-    std::string m_name;
-public:
-    ConfInterface(sdbus::IConnection& connection, const std::string& objectPath)
-    : AdaptorInterfaces(connection, std::move(objectPath)), m_name(::INTERFACE_NAME) {
-        registerAdaptor();
-    }
-    ~ConfInterface() {
-        unregisterAdaptor();
-    }
+constexpr bool debug_mode = true;
 
-    virtual void ChangeConfiguration(const std::string& key, const sdbus::Variant& value) = 0;
-    virtual std::map<std::string, sdbus::Variant> GetConfiguration() = 0;
 
-    void emitConfigurationChanged(const std::map<std::string, sdbus::Variant>& newConfig) {
-        emitSignal("configurationChanged")
-            .onInterface(this->m_name)
-            .withArguments(newConfig);
-    }
+// void ChangeConfiguration(std::string key, sdbus::Variant value);
+std::function<void(std::string, sdbus::Variant)> ChangeConfWrapper(const std::string& app_path);
+
+// std::map<std::string, sdbus::Variant> GetConfiguration();
+std::function<std::map<std::string, sdbus::Variant>()> GetConfWrapper(const std::string& app_path);
+
+std::map<const std::string, const std::string> METHODS_NAMES {
+    {"change", "ChangeConfiguration"},
+    {"get", "GetConfiguration"}
+};
+
+std::map<const std::string, const std::string> SIGNALS_NAMES {
+    {"changed", "configurationChanged"}
+};
+
+
+inline auto create_object_name = [](const std::string& app_name)->std::string {
+    const std::string APP_BASE_NAME = "/com/system/configurationManager/Application/";
+
+    return APP_BASE_NAME + app_name;
 };

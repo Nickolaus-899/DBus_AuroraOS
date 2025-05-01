@@ -1,43 +1,39 @@
 #include <iostream>
-#include <string>
 #include <sdbus-c++/sdbus-c++.h>
-#include <fstream>
-#include <vector>
+#include <filesystem>
+#include <string>
 
-#include "conf_worker.cpp"
+#include "service.cpp"
 
 
-int main(int argc, char *argv[]) {
+int main() {
     auto connection = sdbus::createSessionBusConnection();
-    auto concatenator = sdbus::createObject(*connection, "/org/sdbuscpp/concatenator");
+    connection->requestName(SERVICE_NAME);
 
-    auto concatenate = [&concatenator](const std::vector<int> numbers, const std::string& separator){
-        // Return error if there are no numbers in the collection
-        if (numbers.empty())
-            throw sdbus::Error("org.sdbuscpp.Concatenator.Error", "No numbers provided");
+    // reading config files
+    if (!std::filesystem::exists(CONF_DIR)) {
+        std::cerr << "Config directory " << CONF_DIR << " doesn't exist\n";
+        exit(EXIT_FAILURE);
+    }
 
-        std::string result;
-        for (auto number : numbers) {
-            result += (result.empty() ? std::string() : separator) + std::to_string(number);
+    for (const auto& entry : std::filesystem::directory_iterator(CONF_DIR)) {
+        if (entry.path().extension() == ".json") {
+            std::string app_name = entry.path().stem();
+            std::string obj_name = create_object_name(app_name);
+
+            try {
+                auto object = sdbus::createObject(*connection, obj_name);
+                do_registration(object);
+            } catch (sdbus::Error& e) {
+                std::cout << "Error while creating an object " << obj_name << ": " << e.what();
+                std::cout << std::endl;
+                exit(EXIT_FAILURE);
+            }
+            
         }
+    }
 
-        // Emit 'concatenated' signal
-        concatenator->emitSignal("concatenated").onInterface("org.sdbuscpp.Concatenator").withArguments(result);
-
-        return result;
-    };
-
-    concatenator->registerMethod("concatenate").onInterface("org.sdbuscpp.Concatenator").implementedAs(concatenate);
-    concatenator->registerSignal("concatenated").onInterface("org.sdbuscpp.Concatenator").withParameters<std::string>();
-
-    concatenator->finishRegistration();
-
-    connection->requestName("org.sdbuscpp.concatenator");
-
-
+    // starting to accept requests
     std::cout << "Running service...\n";
-
     connection->enterEventLoop();
-
-    // return EXIT_SUCCESS;
 }
