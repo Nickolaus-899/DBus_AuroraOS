@@ -40,7 +40,7 @@ std::function<void(std::string, sdbus::Variant)> ChangeConfWrapper(
         conf_worker::save_conf(config, app_name);
 
         // send a signal to client with updated config
-        object->emitSignal(SIGNALS_NAMES["changed"])
+        object->emitSignal(SIGNAL_NAMES::changed)
             .onInterface(INTERFACE_NAME)
             .withArguments(config);
     };
@@ -67,18 +67,18 @@ void do_registration(std::unique_ptr<sdbus::IObject>& object) {
     if (debug_mode) std::cout << "Registering " << app_path << "...\n";
 
     // registering the method ChangeConfiguration
-    object->registerMethod(METHODS_NAMES["change"])
+    object->registerMethod(METHOD_NAMES::Change)
         .onInterface(INTERFACE_NAME)
         .implementedAs(ChangeConfWrapper(app_path, object));
 
     // registering the method GetConfiguration
-    object->registerMethod(METHODS_NAMES["get"])
+    object->registerMethod(METHOD_NAMES::Get)
         .onInterface(INTERFACE_NAME)
         .implementedAs(GetConfWrapper(app_path, object));
 
 
     // registering the signal configurationChanged
-    object->registerSignal(SIGNALS_NAMES["changed"])
+    object->registerSignal(SIGNAL_NAMES::changed)
         .onInterface(INTERFACE_NAME)
         .withParameters<std::map<std::string, sdbus::Variant>>();
 

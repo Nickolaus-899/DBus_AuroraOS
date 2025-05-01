@@ -1,58 +1,27 @@
 #include <iostream>
 #include <string>
-#include <nlohmann/json.hpp>
-#include <fstream>
-#include <chrono>
-#include <thread>
+#include <sdbus-c++/sdbus-c++.h>
 
-#include "printer.hpp"
+#include "proxy.cpp"
 
-using json = nlohmann::json;
 
-void Printer::print() {
-    std::cout << this->phrase << "\n";
-}
-
-void Printer::schedule() {
-    this->print();
-    std::this_thread::sleep_for(std::chrono::seconds(this->timeout));
-
-    auto conf = read_conf();
-
-    this->timeout = conf.first;
-    this->phrase = conf.second;
-
-    this->schedule();
-}
-
-std::pair<uint, std::string> read_conf() {
-    std::ifstream inp_conf(CONF_PATH);
-    json conf;
-
-    if (inp_conf.is_open()) {
-        inp_conf >> conf;
-        inp_conf.close();
-    } else {
-        std::cerr << "Error while oppening the file " << CONF_PATH << std::endl;
-        exit(EXIT_FAILURE);
-    }
-
-    if (debug_mode) {
-        std::cout << "Conf file was read successfully\n";
-    }
-
-    uint t = conf["Timeout"];
-    std::string p = conf["TimeoutPhrase"];
-
-    return std::pair(t, p);
-}
-
+constexpr const char* APP_NAME = "confManagerApplication1";
 
 int main() {
-    auto conf = read_conf();
-    auto printer = Printer(conf.first, conf.second);
+    // to connect to the service
+    auto connection = sdbus::createSessionBusConnection();
+    auto proxy = sdbus::createProxy(*connection, SERVICE_NAME, create_object_name(APP_NAME));
 
-    std::thread t(&Printer::schedule, &printer);
+    // to print message
+    auto printer = sch_printer::Printer();
+
+    await_signals(proxy, printer);
+    read_conf(proxy, printer);
+
+    std::cout << "\nRunning client...\n";
+    std::cout << "Service name to address: " << SERVICE_NAME << "\n";
+
+    std::thread t(&sch_printer::Printer::schedule, &printer);
     t.join();
     
     return EXIT_SUCCESS;

@@ -94,4 +94,4 @@ void load_conf(Config& conf, const std::string& conf_path) {
     }
 }
 
-}
+} // namespace conf_worker
