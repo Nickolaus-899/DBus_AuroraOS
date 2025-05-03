@@ -28,6 +28,8 @@ void await_signals(std::unique_ptr<sdbus::IProxy>& proxy, std::shared_ptr<sch_pr
 
             printer->update(timeout, phrase);
         });
+
+    proxy->finishRegistration();
 }
 
 void read_conf(std::unique_ptr<sdbus::IProxy>& proxy, std::shared_ptr<sch_printer::Printer>& printer) {

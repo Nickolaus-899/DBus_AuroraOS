@@ -33,8 +33,8 @@ void Printer::schedule() {
     this->print();
     
     // sleep (needs to be aware of incoming signals from the server, two cases below do not)
-    std::this_thread::sleep_for(std::chrono::seconds(this->timeout)); 
-    // sleep(this->timeout);
+    // std::this_thread::sleep_for(std::chrono::seconds(this->timeout)); 
+    sleep(this->timeout);
 
     // repeate
     if(this->m_repeate) this->schedule();

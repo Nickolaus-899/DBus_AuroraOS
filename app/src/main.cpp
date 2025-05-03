@@ -23,9 +23,9 @@ int main() {
     std::cout << "Service name to address: " << SERVICE_NAME << "\n";
 
     std::thread t(&sch_printer::Printer::schedule, printer);
-    t.join();
 
-    // printer->schedule();
+    connection->enterEventLoop();
+    t.join();
     
     return EXIT_SUCCESS;
 }   
