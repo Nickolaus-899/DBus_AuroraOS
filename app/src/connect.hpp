@@ -26,4 +26,4 @@ inline auto create_object_name = [](const std::string& app_name)->std::string {
     return APP_BASE_NAME + app_name;
 };
 
-constexpr bool debug_mode = false;
+constexpr bool debug_mode = true;

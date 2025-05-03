@@ -26,8 +26,12 @@ std::function<void(std::string, sdbus::Variant)> ChangeConfWrapper(
 
     const std::string app_name = extract_app_name(app_path);
 
-    return [app_name, &object](std::string key, sdbus::Variant value) {
-        if (debug_mode) std::cout << "Call ChangeConfiguration with " << key << "\n";
+    // this derefferencing is needed to prevent pointer from beeing cleaned up 
+    // and we can't catch it by value (copying) it since it is a unique_ptr
+    sdbus::IObject* object_ptr = object.get();
+
+    return [app_name, object_ptr](std::string key, sdbus::Variant value) {
+        if (debug_mode) std::cout << "Call ChangeConfiguration of " << key << "\n";
 
         std::map<std::string, sdbus::Variant> config;
         conf_worker::load_conf(config, app_name);
@@ -40,9 +44,11 @@ std::function<void(std::string, sdbus::Variant)> ChangeConfWrapper(
         conf_worker::save_conf(config, app_name);
 
         // send a signal to client with updated config
-        object->emitSignal(SIGNAL_NAMES::changed)
+        object_ptr->emitSignal(SIGNAL_NAMES::changed)
             .onInterface(INTERFACE_NAME)
             .withArguments(config);
+
+        if (debug_mode) std::cout << "Signal was emitted\n";
     };
 }
 
@@ -53,7 +59,10 @@ std::function<std::map<std::string, sdbus::Variant>()> GetConfWrapper(
 
     const std::string app_name = extract_app_name(app_path);
 
-    return [app_name, &object](){
+    // Object is actually not needed but I pass it to keep the same function signature
+    sdbus::IObject* object_ptr = object.get();
+
+    return [app_name, object_ptr](){
         if (debug_mode) std::cout << "Call GetConfiguration\n";
 
         std::map<std::string, sdbus::Variant> config;

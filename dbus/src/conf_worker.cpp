@@ -15,7 +15,7 @@ inline const std::string CONF_DIR = std::string(getenv("HOME")) + "/com.system.c
 namespace conf_worker {
 
 void save_conf(Config& conf, const std::string& conf_path) {
-    auto path = CONF_DIR + conf_path;
+    auto path = CONF_DIR + conf_path + ".json";
 
     if (!std::filesystem::exists(path)) {
         std::cerr << "File " << path << " doesn't exist (save)\n";
@@ -61,7 +61,7 @@ void save_conf(Config& conf, const std::string& conf_path) {
 }
 
 void load_conf(Config& conf, const std::string& conf_path) {
-    auto path = CONF_DIR + conf_path;
+    auto path = CONF_DIR + conf_path + ".json";
 
     if (!std::filesystem::exists(path)) {
         std::cerr << "File " << path << " doesn't exist (load)\n";
