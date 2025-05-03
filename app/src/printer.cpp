@@ -16,6 +16,7 @@ public:
     explicit Printer(uint32_t t, std::string& p): timeout(t), phrase(p) {};
     explicit Printer(): timeout(1), phrase("Default phrase") {}
     ~Printer() = default;
+    
     void print();
     void schedule();
     void update(uint32_t t, std::string& p);
@@ -30,9 +31,10 @@ void Printer::print() {
 void Printer::schedule() {
     // action
     this->print();
-
-    // sleep
-    std::this_thread::sleep_for(std::chrono::seconds(this->timeout));
+    
+    // sleep (needs to be aware of incoming signals from the server, two cases below do not)
+    std::this_thread::sleep_for(std::chrono::seconds(this->timeout)); 
+    // sleep(this->timeout);
 
     // repeate
     if(this->m_repeate) this->schedule();

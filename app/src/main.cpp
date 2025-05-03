@@ -1,6 +1,7 @@
 #include <iostream>
 #include <string>
 #include <sdbus-c++/sdbus-c++.h>
+#include <memory>
 
 #include "proxy.cpp"
 
@@ -13,7 +14,7 @@ int main() {
     auto proxy = sdbus::createProxy(*connection, SERVICE_NAME, create_object_name(APP_NAME));
 
     // to print message
-    auto printer = sch_printer::Printer();
+    auto printer = std::make_shared<sch_printer::Printer>();
 
     await_signals(proxy, printer);
     read_conf(proxy, printer);
@@ -21,8 +22,10 @@ int main() {
     std::cout << "\nRunning client...\n";
     std::cout << "Service name to address: " << SERVICE_NAME << "\n";
 
-    std::thread t(&sch_printer::Printer::schedule, &printer);
+    std::thread t(&sch_printer::Printer::schedule, printer);
     t.join();
+
+    // printer->schedule();
     
     return EXIT_SUCCESS;
-}
+}   

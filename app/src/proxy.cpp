@@ -1,5 +1,6 @@
 #include <iostream>
 #include <sdbus-c++/sdbus-c++.h>
+#include <memory>
 
 #include "connect.hpp"
 #include "printer.cpp"
@@ -8,10 +9,10 @@
 using Config = std::map<std::string, sdbus::Variant>;
 
 
-void await_signals(std::unique_ptr<sdbus::IProxy>& proxy, sch_printer::Printer& printer) {
+void await_signals(std::unique_ptr<sdbus::IProxy>& proxy, std::shared_ptr<sch_printer::Printer>& printer) {
     proxy->uponSignal(SIGNAL_NAMES::changed)
         .onInterface(INTERFACE_NAME)
-        .call([&printer](const Config& conf){
+        .call([printer](const Config& conf){
             if (debug_mode) std::cout << "Received a signal\n";
 
             uint32_t timeout;
@@ -25,11 +26,11 @@ void await_signals(std::unique_ptr<sdbus::IProxy>& proxy, sch_printer::Printer& 
                 exit(EXIT_FAILURE);
             }
 
-            printer.update(timeout, phrase);
+            printer->update(timeout, phrase);
         });
 }
 
-void read_conf(std::unique_ptr<sdbus::IProxy>& proxy, sch_printer::Printer& printer) {
+void read_conf(std::unique_ptr<sdbus::IProxy>& proxy, std::shared_ptr<sch_printer::Printer>& printer) {
     // item to store the response
     Config conf;
     
@@ -59,5 +60,5 @@ void read_conf(std::unique_ptr<sdbus::IProxy>& proxy, sch_printer::Printer& prin
 
     if (debug_mode) std::cout << "Configuration was extracted and read: " << phrase << "\n";
 
-    printer.update(timeout, phrase);
+    printer->update(timeout, phrase);
 }
