@@ -29,6 +29,7 @@ void await_signals(std::unique_ptr<sdbus::IProxy>& proxy, std::shared_ptr<sch_pr
             printer->update(timeout, phrase);
         });
 
+    // uponSignal as registration, finishRegistration() is necessary
     proxy->finishRegistration();
 }
 

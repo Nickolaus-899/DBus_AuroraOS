@@ -24,6 +24,7 @@ int main() {
 
     std::thread t(&sch_printer::Printer::schedule, printer);
 
+    // to accept incoming signals
     connection->enterEventLoop();
     t.join();
     

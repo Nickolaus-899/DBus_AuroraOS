@@ -29,15 +29,15 @@ void save_conf(Config& conf, const std::string& conf_path) {
         try {
             // uint
             try {
-                uint32_t intValue = value.get<uint32_t>();
-                data[key] = intValue;
+                uint32_t int_value = value.get<uint32_t>();
+                data[key] = int_value;
                 continue;
             } catch (const sdbus::Error&) {}
 
             // string
             try {
-                std::string strValue = value.get<std::string>();
-                data[key] = strValue;
+                std::string str_value = value.get<std::string>();
+                data[key] = str_value;
                 continue;
             } catch (const sdbus::Error&) {}
 
