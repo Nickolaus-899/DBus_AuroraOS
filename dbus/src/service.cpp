@@ -40,6 +40,18 @@ std::function<void(std::string, sdbus::Variant)> ChangeConfWrapper(
             std::cout << "Warning: creating new field " << key << std::endl;
         }
 
+        // let's treat int as uint if possible
+        try {
+            int32_t int_val = value.get<int32_t>();
+            if (int_val >= 0) {
+                // convert to uint32_t
+                value = sdbus::Variant(static_cast<uint32_t>(int_val));
+                if (debug_mode) std::cout << "Converted int32 to uint32 for key: " << key << "\n";
+            } else {
+                throw sdbus::Error("Invalid field " + key, "Timeout cannot be negative");
+            }
+        } catch (const sdbus::Error&) {}
+
         config[key] = value;
         conf_worker::save_conf(config, app_name);
 

@@ -23,7 +23,6 @@ void save_conf(Config& conf, const std::string& conf_path) {
     }
 
     json data;
-    std::ofstream out_conf(path);
 
     for (auto& [key, value] : conf) {
         try {
@@ -50,6 +49,8 @@ void save_conf(Config& conf, const std::string& conf_path) {
         }
     }
 
+    // write result (do not open earlier to prevent from clearing the file in case of an error)
+    std::ofstream out_conf(path);
     
     if (out_conf.is_open()) {
         out_conf << data.dump(4);
