@@ -42,9 +42,12 @@ ChangeConfWrapper(std::unique_ptr<sdbus::IObject> &object)
         std::map<std::string, sdbus::Variant> config;
         conf_worker::load_conf(config, app_name);
 
+        bool field_exists_ = true;
+
         if (config.find(key) == config.end())
         {
             std::cout << "Warning: creating new field " << key << std::endl;
+            field_exists_ = false;
         }
 
         if (INT_IS_UINT)
@@ -72,6 +75,20 @@ ChangeConfWrapper(std::unique_ptr<sdbus::IObject> &object)
             catch (const sdbus::Error &)
             {
             }
+        }
+
+        // if type in an existing
+        if (field_exists_ &&
+            config[key].peekValueType() != value.peekValueType())
+        {
+            std::string err_msg = "Expected " + config[key].peekValueType() +
+                                  " but got " + value.peekValueType() +
+                                  " for key " + key + "\n";
+
+            if (debug_mode)
+                std::cerr << err_msg;
+
+            throw sdbus::Error("Type mismatch", err_msg);
         }
 
         config[key] = value;

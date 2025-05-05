@@ -1,0 +1,12 @@
+// the file is just a visualization, no relation with the code
+
+interface InteractionInterface {
+    const string name = "com.system.configurationManager.Application.Configuration";
+
+    // methods
+    func ChangeConfiguration(string key, sdbus::Variant value) -> void;
+    func GetConfiguration() -> map<string, sdbus::Variant>;
+
+    // signals
+    signal configurationChanged(map<string, sdbus::Variant> conf);
+}

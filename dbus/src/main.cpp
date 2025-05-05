@@ -47,6 +47,6 @@ int main()
 
     // starting to accept requests
     std::cout << "Running service...\n";
-    std::cout << "Service name: " << SERVICE_NAME << "\n";
+    std::cout << "Service name: " << SERVICE_NAME << "\n\n";
     connection->enterEventLoop();
 }

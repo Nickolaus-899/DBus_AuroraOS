@@ -17,7 +17,7 @@ void await_signals(std::unique_ptr<sdbus::IProxy> &proxy,
             [printer](const Config &conf)
             {
                 if (debug_mode)
-                    std::cout << "Received a signal\n";
+                    std::cout << "-- Received a signal\n";
 
                 uint32_t timeout;
                 std::string phrase;
