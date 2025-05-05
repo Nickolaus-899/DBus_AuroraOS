@@ -8,7 +8,7 @@
 cmake -B build/
 ```
 
-Затем необходимо сбилдить сам проект и запустить его
+Затем необходимо сбилдить сам проект и запустить его (service: `configurationManager`, app: `confManagerApplication1`)
 ```
 cmake --build build/
 ./build/src/{project_name}
