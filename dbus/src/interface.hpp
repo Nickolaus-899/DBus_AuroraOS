@@ -8,6 +8,7 @@ constexpr const char* INTERFACE_NAME = "com.system.configurationManager.Applicat
 constexpr const char* SERVICE_NAME = "com.system.configurationManager";
 
 constexpr bool debug_mode = true;
+constexpr bool INT_IS_UINT = true;
 
 
 // void ChangeConfiguration(std::string key, sdbus::Variant value);
